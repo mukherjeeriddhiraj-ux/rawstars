@@ -1,31 +1,4 @@
 import streamlit as st
-import threading
-import time
-from pyngrok import ngrok
-
-# Your RawStars data and logic
-player_data = {
-    "Virat Kohli": {"role": "Batsman", "matches": 111, "average": 53.5, "strike_rate": 137.9, "recent_form": "85,12,67,44,91"},
-    "Rohit Sharma": {"role": "Batsman", "matches": 105, "average": 52.5, "strike_rate": 136.5, "recent_form": "82,33,44,45,20"},
-    "Hardik Pandya": {"role": "All-Rounder", "matches": 107, "average": 49.5, "strike_rate": 120.6, "recent_form": "33,24,55,0,44"},
-    "Ravindra Jadeja": {"role": "All-Rounder", "matches": 106, "average": 43.2, "strike_rate": 112.0, "recent_form": "30,20,35,45,28"},
-    "Jasprit Bumrah": {"role": "Bowler", "matches": 145, "average": 24.1, "strike_rate": 118.3, "recent_form": "22,8,15,30,12"},
-}
-
-def get_form_rating(recent_scores):
-    scores = [int(x.strip()) for x in recent_scores.split(",")]
-    average = sum(scores) / len(scores)
-    if average >= 50:
-        rating = "🔥 Hot Form"
-    elif average >= 25:
-        rating = "👍 Average Form"
-    else:
-        rating = "❄️ Poor Form"
-    return rating, round(average, 1)
-
-# Write the Streamlit app to a file
-app_code = '''
-import streamlit as st
 
 player_data = {
     "Virat Kohli": {"role": "Batsman", "matches": 111, "average": 53.5, "strike_rate": 137.9, "recent_form": "85,12,67,44,91"},
@@ -48,7 +21,7 @@ def get_form_rating(recent_scores):
 
 st.set_page_config(page_title="RawStars", page_icon="🏏")
 st.title("🏏 RawStars")
-st.subheader("India s Cricket Talent Intelligence Platform")
+st.subheader("India's Cricket Talent Intelligence Platform")
 st.divider()
 
 page = st.sidebar.radio("Navigate", ["Scout Dashboard", "Player Profile", "Compare Players"])
@@ -97,19 +70,3 @@ elif page == "Compare Players":
             st.success(f"Scout Verdict: {p2} is in better current form")
         else:
             st.success("Scout Verdict: Both players in equal form")
-'''
-
-with open("rawstars_app.py", "w") as f:
-    f.write(app_code)
-
-# Launch the app
-public_url = ngrok.connect(8501)
-print("RawStars is LIVE at:", public_url)
-
-threading.Thread(
-    target=lambda: __import__('os').system("streamlit run rawstars_app.py --server.port 8501 --server.headless true"),
-    daemon=True
-).start()
-
-time.sleep(4)
-print("Open the link above in a new tab!")

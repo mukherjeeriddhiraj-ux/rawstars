@@ -70,3 +70,37 @@ elif page == "Compare Players":
             st.success(f"Scout Verdict: {p2} is in better current form")
         else:
             st.success("Scout Verdict: Both players in equal form")
+            elif page == "Register Player":
+    st.header("📝 Register Your Profile")
+    st.caption("Grassroots players — get discovered by scouts")
+    
+    name = st.text_input("Full Name")
+    col1, col2 = st.columns(2)
+    role = col1.selectbox("Role", ["Batsman", "Bowler", "All-Rounder"])
+    age = col2.number_input("Age", min_value=10, max_value=50, value=18)
+    city = st.text_input("City")
+    matches = st.number_input("Total Matches Played", min_value=1, value=10)
+    average = st.number_input("Career Batting Average", min_value=0.0, value=25.0)
+    strike_rate = st.number_input("Strike Rate", min_value=0.0, value=110.0)
+    recent_form = st.text_input(
+        "Recent 5 Match Scores (comma separated)",
+        placeholder="e.g. 45,23,67,12,89"
+    )
+    
+    if st.button("Register & Join RawStars"):
+        if name and city and recent_form:
+            st.session_state.player_data[name] = {
+                "role": role,
+                "age": age,
+                "city": city,
+                "matches": matches,
+                "average": average,
+                "strike_rate": strike_rate,
+                "recent_form": recent_form
+            }
+            rating, avg = get_form_rating(recent_form)
+            st.success(f"Welcome to RawStars, {name}!")
+            st.info(f"Your current form rating: {rating} — Recent Average: {avg}")
+            st.balloons()
+        else:
+            st.error("Please fill in all fields!")

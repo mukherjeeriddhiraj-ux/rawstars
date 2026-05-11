@@ -75,7 +75,11 @@ elif page == "Player Profile":
     st.header("👤 Player Profile")
     players = load_players()
     if players:
-        names = [p["name"] for p in players]
+        search = st.text_input("🔍 Search player by name")
+        names = [p["name"] for p in players if search.lower() in p["name"].lower()]
+        if not names:
+            st.warning("No players found!")
+            st.stop()
         name = st.selectbox("Select Player", names)
         player = next(p for p in players if p["name"] == name)
         rating, avg = get_form_rating(player["recent_form"])

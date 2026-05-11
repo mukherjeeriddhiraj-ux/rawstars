@@ -90,9 +90,13 @@ elif page == "Player Profile":
         col4.metric("Matches", player["matches"])
         st.info(f"Current Form: {rating}")
         st.caption(f"City: {player['city']} | Age: {player['age']}")
+        st.divider()
+        share_text = f"Check out {player['name']} on RawStars! 🏏%0A Role: {player['role']} | City: {player['city']}%0A Current Form: {rating} | Recent Avg: {avg}%0A%0ADiscover cricket talent at: https://rawstars-qzayzvdcf7alqcojvzoa46.streamlit.app"
+        whatsapp_url = f"https://wa.me/?text={share_text}"
+        st.markdown(f"[📲 Share on WhatsApp]({whatsapp_url})", unsafe_allow_html=True)
+        st.caption("Share this player's profile with your coach or franchise!")
     else:
         st.info("No players registered yet!")
-
 elif page == "Compare Players":
     st.header("⚔️ Compare Players")
     players = load_players()

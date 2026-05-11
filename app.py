@@ -67,10 +67,11 @@ if page == "Scout Dashboard":
                 "Form": rating,
                 "Recent Avg": avg,
                 "Career Avg": p["average"],
+                "Username": p.get("username", "N/A"),
             })
         rankings.sort(key=lambda x: x["Recent Avg"], reverse=True)
         for i, p in enumerate(rankings):
-            st.write(f"**#{i+1} {p['Player']}** — {p['City']} — {p['Role']} — {p['Form']} — Recent Avg: {p['Recent Avg']}")
+            st.write(f"**#{i+1} {p['Player']}** (@{p.get('Username', 'N/A')}) — {p['City']} — {p['Role']} — {p['Form']} — Recent Avg: {p['Recent Avg']}")
     else:
         st.info("No players registered yet. Be the first to join RawStars!")
 

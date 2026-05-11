@@ -23,9 +23,10 @@ def load_players():
     response = supabase.table("players").select("*").execute()
     return response.data
 
-def register_player(name, role, age, city, matches, average, strike_rate, recent_form):
+def register_player(name, username, role, age, city, matches, average, strike_rate, recent_form):
     supabase.table("players").insert({
         "name": name,
+        "username": username,
         "role": role,
         "age": age,
         "city": city,
@@ -133,6 +134,8 @@ elif page == "Register Player":
     st.header("📝 Register Your Profile")
     st.caption("Grassroots players — get discovered by scouts")
     name = st.text_input("Full Name")
+    username = st.text_input("Username", placeholder="e.g. rahul_sharma_mumbai")
+    st.caption("Your unique RawStars ID — choose carefully, it can't be changed!")
     col1, col2 = st.columns(2)
     role = col1.selectbox("Role", ["Batsman", "Bowler", "All-Rounder"])
     age = col2.number_input("Age", min_value=10, max_value=50, value=18)
@@ -145,16 +148,16 @@ elif page == "Register Player":
         placeholder="e.g. 45,23,67,12,89"
     )
     if st.button("Register & Join RawStars"):
-        if name and city and recent_form:
+        if name and username and city and recent_form:
             existing = load_players()
-            existing_names = [p["name"].lower() for p in existing]
-            if name.lower() in existing_names:
-                st.error(f"{name} is already registered on RawStars!")
+            existing_usernames = [p["username"] for p in existing if p["username"]]
+            if username.lower() in [u.lower() for u in existing_usernames]:
+                st.error(f"Username '{username}' is already taken! Please choose another.")
             else:
-                register_player(name, role, age, city, matches, average, strike_rate, recent_form)
+                register_player(name, username, role, age, city, matches, average, strike_rate, recent_form)
                 rating, avg = get_form_rating(recent_form)
                 st.success(f"Welcome to RawStars, {name}!")
-                st.info(f"Your current form rating: {rating} — Recent Average: {avg}")
+                st.info(f"Your username: @{username} | Form: {rating} | Recent Avg: {avg}")
                 st.balloons()
         else:
-            st.error("Please fill in all fields!")
+            st.error("Please fill in all fields including username!")

@@ -130,7 +130,6 @@ elif page == "Compare Players":
     else:
         st.info("Need at least 2 players registered to compare!")
 
-
     elif page == "Register Player":
     st.header("📝 Register Your Profile")
     st.caption("Grassroots players — get discovered by scouts")

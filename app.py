@@ -130,7 +130,8 @@ elif page == "Compare Players":
     else:
         st.info("Need at least 2 players registered to compare!")
 
-elif page == "Register Player":
+
+    elif page == "Register Player":
     st.header("📝 Register Your Profile")
     st.caption("Grassroots players — get discovered by scouts")
     name = st.text_input("Full Name")
@@ -145,7 +146,7 @@ elif page == "Register Player":
         "Recent 5 Match Scores (comma separated)",
         placeholder="e.g. 45,23,67,12,89"
     )
-  if st.button("Register & Join RawStars"):
+    if st.button("Register & Join RawStars"):
         if name and city and recent_form:
             existing = load_players()
             existing_names = [p["name"].lower() for p in existing]

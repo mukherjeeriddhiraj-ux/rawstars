@@ -54,6 +54,10 @@ if page == "Scout Dashboard":
     st.caption("Players ranked by current form")
     players = load_players()
     if players:
+        cities = ["All Cities"] + sorted(list(set(p["city"] for p in players)))
+        selected_city = st.selectbox("🏙️ Filter by City", cities)
+        if selected_city != "All Cities":
+            players = [p for p in players if p["city"] == selected_city]
         rankings = []
         for p in players:
             rating, avg = get_form_rating(p["recent_form"])

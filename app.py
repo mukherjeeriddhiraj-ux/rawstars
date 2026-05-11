@@ -1,8 +1,6 @@
 import streamlit as st
 from supabase import create_client
-import os
 
-# Connect to Supabase
 url = st.secrets["SUPABASE_URL"]
 key = st.secrets["SUPABASE_KEY"]
 supabase = create_client(url, key)
@@ -101,6 +99,7 @@ elif page == "Player Profile":
         st.caption("Share this player's profile with your coach or franchise!")
     else:
         st.info("No players registered yet!")
+
 elif page == "Compare Players":
     st.header("⚔️ Compare Players")
     players = load_players()
@@ -130,7 +129,7 @@ elif page == "Compare Players":
     else:
         st.info("Need at least 2 players registered to compare!")
 
-    elif page == "Register Player":
+elif page == "Register Player":
     st.header("📝 Register Your Profile")
     st.caption("Grassroots players — get discovered by scouts")
     name = st.text_input("Full Name")

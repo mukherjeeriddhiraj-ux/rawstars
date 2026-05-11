@@ -145,12 +145,17 @@ elif page == "Register Player":
         "Recent 5 Match Scores (comma separated)",
         placeholder="e.g. 45,23,67,12,89"
     )
-    if st.button("Register & Join RawStars"):
+  if st.button("Register & Join RawStars"):
         if name and city and recent_form:
-            register_player(name, role, age, city, matches, average, strike_rate, recent_form)
-            rating, avg = get_form_rating(recent_form)
-            st.success(f"Welcome to RawStars, {name}!")
-            st.info(f"Your current form rating: {rating} — Recent Average: {avg}")
-            st.balloons()
+            existing = load_players()
+            existing_names = [p["name"].lower() for p in existing]
+            if name.lower() in existing_names:
+                st.error(f"{name} is already registered on RawStars!")
+            else:
+                register_player(name, role, age, city, matches, average, strike_rate, recent_form)
+                rating, avg = get_form_rating(recent_form)
+                st.success(f"Welcome to RawStars, {name}!")
+                st.info(f"Your current form rating: {rating} — Recent Average: {avg}")
+                st.balloons()
         else:
             st.error("Please fill in all fields!")

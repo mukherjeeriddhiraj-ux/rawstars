@@ -69,8 +69,15 @@ if page == "Scout Dashboard":
         selected_city = col1.selectbox("🏙️ City", cities)
         roles = ["All Roles", "Batsman", "Bowler", "Wicketkeeper", "All-Rounder"]
         selected_role = col2.selectbox("🏏 Role", roles)
-        styles = ["All Styles"] + sorted(list(set(p["bowling_style"] for p in players if p.get("bowling_style"))))
+       styles = ["All Styles"] + sorted(list(set(p["bowling_style"] for p in players if p.get("bowling_style"))))
         selected_style = col3.selectbox("🌀 Bowling Style", styles)
+        
+        col4, col5 = st.columns(2)
+        hands = ["All", "Right Hand", "Left Hand"]
+        selected_hand = col4.selectbox("🤚 Batting Hand", hands)
+        
+        if selected_hand != "All":
+            players = [p for p in players if p.get("batting_hand") == selected_hand]
         if selected_city != "All Cities":
             players = [p for p in players if p["city"] == selected_city]
         if selected_role != "All Roles":

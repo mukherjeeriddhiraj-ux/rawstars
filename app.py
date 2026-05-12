@@ -85,7 +85,7 @@ if page == "Scout Dashboard":
             players = [p for p in players if p.get("bowling_style") == selected_style]
         rankings = []
         for p in players:
-            rating, avg = get_form_rating(p["recent_form"])
+            rating, avg = get_form_rating(player["recent_form"], player["role"])
             rankings.append({
                 "Player": p["name"],
                 "City": p["city"],
@@ -112,7 +112,7 @@ elif page == "Player Profile":
             st.stop()
         name = st.selectbox("Select Player", names)
         player = next(p for p in players if p["name"] == name)
-        rating, avg = get_form_rating(player["recent_form"])
+        rating, avg = get_form_rating(player["recent_form"], player["role"])
         col1, col2, col3, col4 = st.columns(4)
         col1.metric("Career Average", player["average"])
         col2.metric("Strike Rate", player["strike_rate"])
@@ -156,8 +156,8 @@ elif page == "Compare Players":
         if st.button("Compare"):
             d1 = next(p for p in players if p["name"] == p1_name)
             d2 = next(p for p in players if p["name"] == p2_name)
-            r1, avg1 = get_form_rating(d1["recent_form"])
-            r2, avg2 = get_form_rating(d2["recent_form"])
+            r1, avg1 = get_form_rating(d1["recent_form"], d1["role"])
+            r2, avg2 = get_form_rating(d2["recent_form"], d2["role"])
             col1.metric("Career Avg", d1["average"])
             col1.metric("Recent Avg", avg1)
             col1.write(r1)

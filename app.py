@@ -1,5 +1,6 @@
 import streamlit as st
 from supabase import create_client
+import pandas as pd
 
 url = st.secrets["SUPABASE_URL"]
 key = st.secrets["SUPABASE_KEY"]
@@ -8,7 +9,6 @@ supabase = create_client(url, key)
 def get_form_rating(recent_form, role="Batsman"):
     try:
         if role == "Bowler":
-            # Format: "4/22, 2/30" — rate by wickets taken
             entries = [x.strip() for x in recent_form.split(",")]
             wickets = [int(e.split("/")[0]) for e in entries]
             avg_wickets = sum(wickets) / len(wickets)
@@ -20,7 +20,6 @@ def get_form_rating(recent_form, role="Batsman"):
                 rating = "❄️ Poor Form"
             return rating, round(avg_wickets, 1)
         else:
-            # Batsman, Wicketkeeper, All-Rounder — rate by runs
             scores = [int(x.strip()) for x in recent_form.split(",")]
             average = sum(scores) / len(scores)
             if average >= 50:
@@ -32,22 +31,10 @@ def get_form_rating(recent_form, role="Batsman"):
             return rating, round(average, 1)
     except:
         return "N/A", 0.0
+
 def load_players():
     response = supabase.table("players").select("*").execute()
     return response.data
-
-def register_player(name, username, role, age, city, matches, average, strike_rate, recent_form):
-    supabase.table("players").insert({
-        "name": name,
-        "username": username,
-        "role": role,
-        "age": age,
-        "city": city,
-        "matches": matches,
-        "average": average,
-        "strike_rate": strike_rate,
-        "recent_form": recent_form
-    }).execute()
 
 st.set_page_config(page_title="RawStars", page_icon="🏏")
 st.title("🏏 RawStars")
@@ -67,16 +54,12 @@ if page == "Scout Dashboard":
     players = load_players()
     if players:
         col1, col2, col3 = st.columns(3)
-        
         cities = ["All Cities"] + sorted(list(set(p["city"] for p in players)))
         selected_city = col1.selectbox("🏙️ City", cities)
-        
         roles = ["All Roles", "Batsman", "Bowler", "Wicketkeeper", "All-Rounder"]
         selected_role = col2.selectbox("🏏 Role", roles)
-        
         styles = ["All Styles"] + sorted(list(set(p["bowling_style"] for p in players if p.get("bowling_style"))))
         selected_style = col3.selectbox("🌀 Bowling Style", styles)
-        
         if selected_city != "All Cities":
             players = [p for p in players if p["city"] == selected_city]
         if selected_role != "All Roles":
@@ -85,7 +68,7 @@ if page == "Scout Dashboard":
             players = [p for p in players if p.get("bowling_style") == selected_style]
         rankings = []
         for p in players:
-            rating, avg = get_form_rating(player["recent_form"], player["role"])
+            rating, avg = get_form_rating(p["recent_form"], p["role"])
             rankings.append({
                 "Player": p["name"],
                 "City": p["city"],
@@ -130,11 +113,13 @@ elif page == "Player Profile":
         st.divider()
         st.subheader("📈 Form Chart")
         try:
-            scores = [int(x.strip()) for x in player["recent_form"].split(",")]
+            if player["role"] == "Bowler":
+                entries = [x.strip() for x in player["recent_form"].split(",")]
+                scores = [int(e.split("/")[0]) for e in entries]
+            else:
+                scores = [int(x.strip()) for x in player["recent_form"].split(",")]
             matches = list(range(1, len(scores) + 1))
-            chart_data = {"Match": matches, "Score": scores}
-            import pandas as pd
-            df = pd.DataFrame(chart_data)
+            df = pd.DataFrame({"Match": matches, "Score": scores})
             st.line_chart(df.set_index("Match"))
         except:
             st.caption("No chart data available")
@@ -191,35 +176,22 @@ elif page == "Register Player":
 
     if role == "Batsman":
         batting_hand = st.selectbox("Batting Hand", ["Right Hand", "Left Hand"])
-
     elif role == "Bowler":
         bowling_style = st.selectbox("Bowling Style", [
-            "Right Arm Fast",
-            "Right Arm Medium Fast",
-            "Left Arm Fast",
-            "Left Arm Medium Fast",
-            "Off Spin",
-            "Leg Spin",
-            "Wrist Spin",
-            "Mystery Spin"
+            "Right Arm Fast", "Right Arm Medium Fast",
+            "Left Arm Fast", "Left Arm Medium Fast",
+            "Off Spin", "Leg Spin", "Wrist Spin", "Mystery Spin"
         ])
-
     elif role == "Wicketkeeper":
         batting_hand = st.selectbox("Batting Hand", ["Right Hand", "Left Hand"])
         wicketkeeper = True
-
     elif role == "All-Rounder":
         col1, col2 = st.columns(2)
         batting_hand = col1.selectbox("Batting Hand", ["Right Hand", "Left Hand"])
         bowling_style = col2.selectbox("Bowling Style", [
-            "Right Arm Fast",
-            "Right Arm Medium Fast",
-            "Left Arm Fast",
-            "Left Arm Medium Fast",
-            "Off Spin",
-            "Leg Spin",
-            "Wrist Spin",
-            "Mystery Spin"
+            "Right Arm Fast", "Right Arm Medium Fast",
+            "Left Arm Fast", "Left Arm Medium Fast",
+            "Off Spin", "Leg Spin", "Wrist Spin", "Mystery Spin"
         ])
 
     matches = st.number_input("Total Matches Played", min_value=1, value=10)
@@ -259,7 +231,7 @@ elif page == "Register Player":
             if username.lower() in [u.lower() for u in existing_usernames]:
                 st.error(f"Username '{username}' is already taken! Please choose another.")
             else:
-               supabase.table("players").insert({
+                supabase.table("players").insert({
                     "name": name,
                     "username": username,
                     "role": role,
@@ -272,10 +244,10 @@ elif page == "Register Player":
                     "batting_hand": batting_hand,
                     "bowling_style": bowling_style,
                     "wicketkeeper": wicketkeeper,
-                    "wickets": wickets,
-                    "dismissals": dismissals
+                    "wickets": int(wickets),
+                    "dismissals": int(dismissals)
                 }).execute()
-                rating, avg = get_form_rating(recent_form)
+                rating, avg = get_form_rating(recent_form, role)
                 st.success(f"Welcome to RawStars, {name}!")
                 st.info(f"Your username: @{username} | Form: {rating} | Recent Avg: {avg}")
                 st.balloons()

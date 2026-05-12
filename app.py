@@ -5,20 +5,33 @@ url = st.secrets["SUPABASE_URL"]
 key = st.secrets["SUPABASE_KEY"]
 supabase = create_client(url, key)
 
-def get_form_rating(recent_scores):
+def get_form_rating(recent_form, role="Batsman"):
     try:
-        scores = [int(x.strip()) for x in recent_scores.split(",")]
-        average = sum(scores) / len(scores)
-        if average >= 50:
-            rating = "🔥 Hot Form"
-        elif average >= 25:
-            rating = "👍 Average Form"
+        if role == "Bowler":
+            # Format: "4/22, 2/30" — rate by wickets taken
+            entries = [x.strip() for x in recent_form.split(",")]
+            wickets = [int(e.split("/")[0]) for e in entries]
+            avg_wickets = sum(wickets) / len(wickets)
+            if avg_wickets >= 3:
+                rating = "🔥 Hot Form"
+            elif avg_wickets >= 1.5:
+                rating = "👍 Average Form"
+            else:
+                rating = "❄️ Poor Form"
+            return rating, round(avg_wickets, 1)
         else:
-            rating = "❄️ Poor Form"
-        return rating, round(average, 1)
+            # Batsman, Wicketkeeper, All-Rounder — rate by runs
+            scores = [int(x.strip()) for x in recent_form.split(",")]
+            average = sum(scores) / len(scores)
+            if average >= 50:
+                rating = "🔥 Hot Form"
+            elif average >= 25:
+                rating = "👍 Average Form"
+            else:
+                rating = "❄️ Poor Form"
+            return rating, round(average, 1)
     except:
         return "N/A", 0.0
-
 def load_players():
     response = supabase.table("players").select("*").execute()
     return response.data

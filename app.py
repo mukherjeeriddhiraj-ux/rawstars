@@ -53,10 +53,23 @@ if page == "Scout Dashboard":
     st.caption("Players ranked by current form")
     players = load_players()
     if players:
+        col1, col2, col3 = st.columns(3)
+        
         cities = ["All Cities"] + sorted(list(set(p["city"] for p in players)))
-        selected_city = st.selectbox("🏙️ Filter by City", cities)
+        selected_city = col1.selectbox("🏙️ City", cities)
+        
+        roles = ["All Roles", "Batsman", "Bowler", "Wicketkeeper", "All-Rounder"]
+        selected_role = col2.selectbox("🏏 Role", roles)
+        
+        styles = ["All Styles"] + sorted(list(set(p["bowling_style"] for p in players if p.get("bowling_style"))))
+        selected_style = col3.selectbox("🌀 Bowling Style", styles)
+        
         if selected_city != "All Cities":
             players = [p for p in players if p["city"] == selected_city]
+        if selected_role != "All Roles":
+            players = [p for p in players if p["role"] == selected_role]
+        if selected_style != "All Styles":
+            players = [p for p in players if p.get("bowling_style") == selected_style]
         rankings = []
         for p in players:
             rating, avg = get_form_rating(p["recent_form"])

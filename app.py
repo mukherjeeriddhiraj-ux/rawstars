@@ -223,12 +223,34 @@ elif page == "Register Player":
         ])
 
     matches = st.number_input("Total Matches Played", min_value=1, value=10)
-    average = st.number_input("Career Batting Average", min_value=0.0, value=25.0)
-    strike_rate = st.number_input("Strike Rate", min_value=0.0, value=110.0)
-    recent_form = st.text_input(
-        "Recent 5 Match Scores (comma separated)",
-        placeholder="e.g. 45,23,67,12,89"
-    )
+
+    if role == "Bowler":
+        average = st.number_input("Bowling Average (runs per wicket)", min_value=0.0, value=25.0)
+        strike_rate = st.number_input("Economy Rate", min_value=0.0, value=7.5)
+        wickets = st.number_input("Total Wickets", min_value=0, value=20)
+        dismissals = 0
+        recent_form = st.text_input(
+            "Recent 5 Match Figures (wickets/runs)",
+            placeholder="e.g. 3/22,2/18,1/30,4/25,2/20"
+        )
+    elif role == "Wicketkeeper":
+        average = st.number_input("Career Batting Average", min_value=0.0, value=25.0)
+        strike_rate = st.number_input("Strike Rate", min_value=0.0, value=110.0)
+        dismissals = st.number_input("Total Dismissals", min_value=0, value=10)
+        wickets = 0
+        recent_form = st.text_input(
+            "Recent 5 Match Scores (comma separated)",
+            placeholder="e.g. 45,23,67,12,89"
+        )
+    else:
+        average = st.number_input("Career Batting Average", min_value=0.0, value=25.0)
+        strike_rate = st.number_input("Strike Rate", min_value=0.0, value=110.0)
+        wickets = 0
+        dismissals = 0
+        recent_form = st.text_input(
+            "Recent 5 Match Scores (comma separated)",
+            placeholder="e.g. 45,23,67,12,89"
+        )
 
     if st.button("Register & Join RawStars"):
         if name and username and city and recent_form:

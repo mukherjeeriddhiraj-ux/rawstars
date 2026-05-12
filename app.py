@@ -113,10 +113,22 @@ elif page == "Player Profile":
         player = next(p for p in players if p["name"] == name)
         rating, avg = get_form_rating(player["recent_form"], player["role"])
         col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Career Average", player["average"])
-        col2.metric("Strike Rate", player["strike_rate"])
-        col3.metric("Recent Average", avg)
-        col4.metric("Matches", player["matches"])
+        col1, col2, col3, col4 = st.columns(4)
+        if player["role"] == "Bowler":
+            col1.metric("Bowling Avg", player["average"])
+            col2.metric("Economy Rate", player["strike_rate"])
+            col3.metric("Recent Wickets Avg", avg)
+            col4.metric("Total Wickets", player.get("wickets", 0))
+        elif player["role"] == "Wicketkeeper":
+            col1.metric("Batting Average", player["average"])
+            col2.metric("Strike Rate", player["strike_rate"])
+            col3.metric("Recent Average", avg)
+            col4.metric("Dismissals", player.get("dismissals", 0))
+        else:
+            col1.metric("Career Average", player["average"])
+            col2.metric("Strike Rate", player["strike_rate"])
+            col3.metric("Recent Average", avg)
+            col4.metric("Matches", player["matches"])
         st.info(f"Current Form: {rating}")
         details = f"City: {player['city']} | Age: {player['age']}"
         if player.get('batting_hand'):

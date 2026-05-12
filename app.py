@@ -39,6 +39,17 @@ def load_players():
 st.set_page_config(page_title="RawStars", page_icon="🏏")
 st.title("🏏 RawStars")
 st.subheader("India's Cricket Talent Intelligence Platform")
+
+players_all = load_players()
+if players_all:
+    total_players = len(players_all)
+    total_cities = len(set(p["city"] for p in players_all))
+    total_roles = len(set(p["role"] for p in players_all))
+    col1, col2, col3 = st.columns(3)
+    col1.metric("🏏 Players", total_players)
+    col2.metric("🏙️ Cities", total_cities)
+    col3.metric("⚡ Roles", total_roles)
+
 st.divider()
 
 page = st.sidebar.radio("Navigate", [

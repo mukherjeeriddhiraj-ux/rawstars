@@ -106,7 +106,14 @@ elif page == "Player Profile":
         col3.metric("Recent Average", avg)
         col4.metric("Matches", player["matches"])
         st.info(f"Current Form: {rating}")
-        st.caption(f"City: {player['city']} | Age: {player['age']}")
+        details = f"City: {player['city']} | Age: {player['age']}"
+        if player.get('batting_hand'):
+            details += f" | Batting: {player['batting_hand']}"
+        if player.get('bowling_style'):
+            details += f" | Bowling: {player['bowling_style']}"
+        if player.get('wicketkeeper'):
+            details += " | 🧤 Wicketkeeper"
+        st.caption(details)
         st.divider()
         st.subheader("📈 Form Chart")
         try:

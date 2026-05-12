@@ -259,7 +259,7 @@ elif page == "Register Player":
             if username.lower() in [u.lower() for u in existing_usernames]:
                 st.error(f"Username '{username}' is already taken! Please choose another.")
             else:
-                supabase.table("players").insert({
+               supabase.table("players").insert({
                     "name": name,
                     "username": username,
                     "role": role,
@@ -271,7 +271,9 @@ elif page == "Register Player":
                     "recent_form": recent_form,
                     "batting_hand": batting_hand,
                     "bowling_style": bowling_style,
-                    "wicketkeeper": wicketkeeper
+                    "wicketkeeper": wicketkeeper,
+                    "wickets": wickets,
+                    "dismissals": dismissals
                 }).execute()
                 rating, avg = get_form_rating(recent_form)
                 st.success(f"Welcome to RawStars, {name}!")

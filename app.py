@@ -95,6 +95,16 @@ elif page == "Player Profile":
         st.info(f"Current Form: {rating}")
         st.caption(f"City: {player['city']} | Age: {player['age']}")
         st.divider()
+        st.subheader("📈 Form Chart")
+        try:
+            scores = [int(x.strip()) for x in player["recent_form"].split(",")]
+            matches = list(range(1, len(scores) + 1))
+            chart_data = {"Match": matches, "Score": scores}
+            import pandas as pd
+            df = pd.DataFrame(chart_data)
+            st.line_chart(df.set_index("Match"))
+        except:
+            st.caption("No chart data available")
         share_text = f"Check out {player['name']} on RawStars! 🏏%0A Role: {player['role']} | City: {player['city']}%0A Current Form: {rating} | Recent Avg: {avg}%0A%0ADiscover cricket talent at: https://rawstars-qzayzvdcf7alqcojvzoa46.streamlit.app"
         whatsapp_url = f"https://wa.me/?text={share_text}"
         st.markdown(f"[📲 Share on WhatsApp]({whatsapp_url})", unsafe_allow_html=True)
